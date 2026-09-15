@@ -16,40 +16,29 @@ echo "4) Discord (discord.com)"
 echo "5) Cloudflare (cloudflare.com)"
 echo "6) Указать свой кастомный домен"
 printf "Введите номер [1-6]: "
-read CHOICE < /dev/tty
+read CHOICE
 
 case "$CHOICE" in
-    2)
-        DOMAIN="youtube.com"
-        ;;
-    3)
-        DOMAIN="google.com"
-        ;;
-    4)
-        DOMAIN="discord.com"
-        ;;
-    5)
-        DOMAIN="cloudflare.com"
-        ;;
+    2) DOMAIN="youtube.com" ;;
+    3) DOMAIN="google.com" ;;
+    4) DOMAIN="discord.com" ;;
+    5) DOMAIN="cloudflare.com" ;;
     6)
         printf "Введите ваш домен (например, google.com): "
-        read INPUT_DOMAIN < /dev/tty
+        read INPUT_DOMAIN
         DOMAIN=$(echo "$INPUT_DOMAIN" | sed -e 's|^[^/]*//||' -e 's|/.*||' -e 's|:.*||')
-        
         if [ -z "$DOMAIN" ]; then
             echo "Домен не введён. Устанавливаем по умолчанию: api.telegram.org"
             DOMAIN="api.telegram.org"
         fi
         ;;
-    *)
-        DOMAIN="api.telegram.org"
-        ;;
+    *) DOMAIN="api.telegram.org" ;;
 esac
 
 # 2. Выбор интервала
 echo ""
 printf "Введите интервал проверки в минутах [по умолчанию: 5]: "
-read INPUT_INTERVAL < /dev/tty
+read INPUT_INTERVAL
 
 INTERVAL="${INPUT_INTERVAL:-5}"
 
@@ -65,6 +54,9 @@ rm -f /usr/bin/netshift_watchdog.sh 2>/dev/null
 echo "Загрузка актуальной версии с GitHub..."
 wget -qO /usr/bin/netshift_watchdog.sh "$REPO_URL/netshift_watchdog.sh"
 chmod +x /usr/bin/netshift_watchdog.sh
+
+# Исправление возможных Windows-окончаний строк (CRLF -> LF)
+sed -i 's/\r$//' /usr/bin/netshift_watchdog.sh
 
 # Подстановка выбранного домена и URL репозитория
 sed -i "s/TARGET_DOMAIN=\".*\"/TARGET_DOMAIN=\"$DOMAIN\"/" /usr/bin/netshift_watchdog.sh
