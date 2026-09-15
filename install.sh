@@ -26,7 +26,11 @@ case "$CHOICE" in
     6)
         printf "Введите ваш домен (например, google.com): "
         read INPUT_DOMAIN
-        DOMAIN=$(echo "$INPUT_DOMAIN" | sed -e 's|^[^/]*//||' -e 's|/.*||' -e 's|:.*||')
+        # 1. Очищаем от протоколов, слэшей и портов
+        CLEAN_DOMAIN=$(echo "$INPUT_DOMAIN" | sed -e 's|^[^/]*//||' -e 's|/.*||' -e 's|:.*||')
+        # 2. Оставляем ТОЛЬКО латиницу, цифры, точки и дефисы (удаляем спецсимволы и \r)
+        DOMAIN=$(echo "$CLEAN_DOMAIN" | tr -cd 'a-zA-Z0-9.-')
+        
         if [ -z "$DOMAIN" ]; then
             echo "Домен не введён. Устанавливаем по умолчанию: api.telegram.org"
             DOMAIN="api.telegram.org"
@@ -40,7 +44,9 @@ echo ""
 printf "Введите интервал проверки в минутах [по умолчанию: 5]: "
 read INPUT_INTERVAL
 
-INTERVAL="${INPUT_INTERVAL:-5}"
+# Очищаем интервал от любых символов, кроме цифр
+CLEAN_INTERVAL=$(echo "$INPUT_INTERVAL" | tr -cd '0-9')
+INTERVAL="${CLEAN_INTERVAL:-5}"
 
 echo ""
 echo "Параметры установки:"
@@ -55,7 +61,7 @@ echo "Загрузка актуальной версии с GitHub..."
 wget -qO /usr/bin/netshift_watchdog.sh "$REPO_URL/netshift_watchdog.sh"
 chmod +x /usr/bin/netshift_watchdog.sh
 
-# Исправление возможных Windows-окончаний строк (CRLF -> LF)
+# Удаление возможного остаточного мусора из скрипта
 sed -i 's/\r$//' /usr/bin/netshift_watchdog.sh
 
 # Подстановка выбранного домена и URL репозитория
