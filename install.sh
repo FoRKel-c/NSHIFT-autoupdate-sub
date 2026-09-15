@@ -16,7 +16,7 @@ echo "4) Discord (discord.com)"
 echo "5) Cloudflare (cloudflare.com)"
 echo "6) Указать свой кастомный домен"
 printf "Введите номер [1-6]: "
-read CHOICE
+read CHOICE < /dev/tty
 
 case "$CHOICE" in
     2)
@@ -33,7 +33,7 @@ case "$CHOICE" in
         ;;
     6)
         printf "Введите ваш домен (например, google.com): "
-        read INPUT_DOMAIN
+        read INPUT_DOMAIN < /dev/tty
         DOMAIN=$(echo "$INPUT_DOMAIN" | sed -e 's|^[^/]*//||' -e 's|/.*||' -e 's|:.*||')
         
         if [ -z "$DOMAIN" ]; then
@@ -49,7 +49,7 @@ esac
 # 2. Выбор интервала
 echo ""
 printf "Введите интервал проверки в минутах [по умолчанию: 5]: "
-read INPUT_INTERVAL
+read INPUT_INTERVAL < /dev/tty
 
 INTERVAL="${INPUT_INTERVAL:-5}"
 
