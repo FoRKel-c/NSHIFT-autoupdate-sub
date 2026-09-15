@@ -20,7 +20,7 @@
 Подключитесь к роутеру по SSH и выполните команду:
 
 ```bash
-sh -c "$(wget -qO- https://raw.githubusercontent.com/FoRKel-c/NSHIFT-autoupdate-sub/main/install.sh)"
+sh -c "$(wget -qO- [https://raw.githubusercontent.com/FoRKel-c/NSHIFT-autoupdate-sub/main/install.sh](https://raw.githubusercontent.com/FoRKel-c/NSHIFT-autoupdate-sub/main/install.sh))"
 ```
 
 Скрипт выведет меню настройки, загрузит нужные файлы и установит задание в планировщик Cron.
@@ -37,6 +37,16 @@ sh -c "$(wget -qO- https://raw.githubusercontent.com/FoRKel-c/NSHIFT-autoupdate-
 ---
 
 ## Полезные команды
+
+* **Отключить автоматическую проверку (пауза):**
+  ```bash
+  sed -i '/netshift_watchdog.sh/s/^/#/' /etc/crontabs/root && /etc/init.d/cron restart
+  ```
+
+* **Включить автоматическую проверку обратно:**
+  ```bash
+  sed -i '/netshift_watchdog.sh/s/^#//' /etc/crontabs/root && /etc/init.d/cron restart
+  ```
 
 * **Проверить текущую конфигурацию:**
   ```bash
