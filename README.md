@@ -20,4 +20,50 @@
 Подключитесь к роутеру по SSH и выполните команду:
 
 ```bash
-sh -c "$(wget -qO- [https://raw.githubusercontent.com/FoRKel-c/NSHIFT-autoupdate-sub/main/install.sh](https://raw.githubusercontent.com/FoRKel-c/NSHIFT-autoupdate-sub/main/install.sh))"
+sh -c "$(wget -qO- https://raw.githubusercontent.com/FoRKel-c/NSHIFT-autoupdate-sub/main/install.sh)"
+```
+
+Скрипт выведет меню настройки, загрузит нужные файлы и установит задание в планировщик Cron.
+
+---
+
+## Как это работает
+
+1. **Проверка процесса**: Скрипт проверяет, запущен ли процесс `/usr/bin/netshift`.
+2. **Проверка обновлений**: Сравнивает локальную версию с `version.txt` на GitHub. Если вышло обновление — скачивает свежий исполняемый файл.
+3. **Мониторинг сети**: Отправляет запросы к выбранному домену. При ошибке ждет 5 секунд и делает контрольную проверку.
+4. **Обновление подписки**: Если домен все еще недоступен, вызывается команда `/usr/bin/netshift subscription_update`, а событие фиксируется в системном журнале.
+
+---
+
+## Полезные команды
+
+* **Проверить текущую конфигурацию:**
+  ```bash
+  head -n 6 /usr/bin/netshift_watchdog.sh
+  ```
+
+* **Посмотреть задачи в планировщике Cron:**
+  ```bash
+  crontab -l
+  ```
+
+* **Проверить логи срабатывания:**
+  ```bash
+  logread | grep netshift_watchdog
+  ```
+
+* **Ручной запуск в режиме отладки:**
+  ```bash
+  sh -x /usr/bin/netshift_watchdog.sh
+  ```
+
+---
+
+## Полное удаление
+
+Для полного удаления скрипта и очистки задач из планировщика выполните:
+
+```bash
+rm -f /usr/bin/netshift_watchdog.sh && sed -i '/netshift_watchdog.sh/d' /etc/crontabs/root && /etc/init.d/cron restart
+```
